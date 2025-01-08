@@ -1,0 +1,19 @@
+[project]
+name = "SSHAlert"
+version = "0.0.1"
+description = "一个简单的 SSH 蜜罐 | A simple SSH honeypot"
+authors = [
+    {name = "KirsminX", email = "dino_doge@qq.com"},
+]
+dependencies = ["pytz>=2024.2", "docker>=7.1.0"]
+requires-python = ">=3.12"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true

@@ -1,0 +1,6 @@
+.idea/
+.pdm-build
+.venv
+pdm.lock
+tests
+.pdm-python

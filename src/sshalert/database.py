@@ -63,7 +63,6 @@ class Database:
                     Time TEXT,
                     IP TEXT,
                     UserName TEXT,
-                    Way TEXT,
                     Password TEXT,
                     Version TEXT,
                     SessionID TEXT,
@@ -129,7 +128,6 @@ class Database:
                 'date': 'Date',
                 'time': 'Time',
                 'username': 'UserName',
-                'way': 'Way',
                 'count': 'Count',
                 'number': 'Number'
             }
@@ -178,7 +176,6 @@ class Database:
                 'date': 'Date',
                 'time': 'Time',
                 'username': 'UserName',
-                'way': 'Way'
             }
 
             for key, value in kwargs.items():
@@ -211,8 +208,7 @@ class Database:
 
             for key, value in kwargs.items():
                 try:
-                    field = Way[key.upper()].value
-                    conditions.append(f"{field} = ?")
+                    conditions.append(f"{key.upper()} = ?")
                     values.append(value)
                 except KeyError:
                     raise ValueError(f"无效的查询字段: {key}")

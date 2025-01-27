@@ -5,9 +5,9 @@ LABEL authors="KirsminX"
 # 使用中科大镜像源
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
 
-# 安装基本依赖 OpenSSH 和 bash
+# 安装基本依赖 OpenSSH 和 bash, 并安装 wget 用于下载脚本
 RUN apk update --update && \
-    apk add --no-cache openssh bash
+    apk add --no-cache openssh bash wget
 
 # 生成随机密码，设置为用户密码，保存到 /Data/Password
 RUN mkdir -p /Data && \
@@ -18,7 +18,8 @@ RUN mkdir -p /Data && \
 # 暴露 22 Port
 EXPOSE 22
 
-# 写入启动脚本
-COPY ./start.sh /start.sh
-RUN chmod +x /start.sh
+# 下载启动脚本
+RUN wget -O /start.sh https://github.com/KirsminX/SSHAlert/raw/refs/heads/main/src/docker/start.sh && \
+    chmod +x /start.sh
+
 CMD ["/start.sh"]

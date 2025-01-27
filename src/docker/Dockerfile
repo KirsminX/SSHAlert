@@ -19,6 +19,6 @@ RUN mkdir -p /Data && \
 EXPOSE 22
 
 # 写入启动脚本
-COPY ./src/Docker/start.sh /start.sh
+COPY ./start.sh /start.sh
 RUN chmod +x /start.sh
 CMD ["/start.sh"]

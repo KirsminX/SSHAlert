@@ -9,11 +9,14 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositorie
 RUN apk update --update && \
     apk add --no-cache openssh bash wget
 
-# 生成随机密码，设置为用户密码，保存到 /Data/Password
+# 生成符合要求的随机密码，设置为用户密码，保存到 /Data/Password
 RUN mkdir -p /Data && \
-    head -c 1024 /dev/urandom | base64 > /Data/Password && \
+    head -c 16 /dev/urandom | base64 > /Data/Password && \
+    echo "Generated Password:" && cat /Data/Password && \
     sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-    echo "root:$(cat /Data/Password)" | chpasswd
+    echo "Setting root password..." && \
+    echo "root:$(cat /Data/Password)" | chpasswd && \
+    echo "Root password set."
 
 # 暴露 22 Port
 EXPOSE 22

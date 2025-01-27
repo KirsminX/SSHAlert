@@ -17,17 +17,29 @@ jobs:
       - name: 使用 BuildX 构建
         uses: docker/setup-buildx-action@v2
 
-      - name: 编译镜像
+      - name: 编译并保存 ARM 镜像
         run: |
           # 获取当前日期
           DATE=$(date +'%Y-%m-%d')
 
-          # 使用 Docker BuildX 编译镜像并加载到 Docker
-          docker buildx build --platform linux/amd64,linux/arm64 -t ssh-alert-server:$DATE -f src/docker/Dockerfile --load .
+          # 使用 Docker BuildX 编译 ARM 镜像并加载到 Docker
+          docker buildx build --platform linux/arm64 -t ssh-alert-server-arm:$DATE -f src/docker/Dockerfile --load .
 
-          # 将镜像保存为 tar 文件
+          # 将 ARM 镜像保存为 tar 文件
           mkdir -p build
-          docker save ssh-alert-server:$DATE -o build/$DATE.tar
+          docker save ssh-alert-server-arm:$DATE -o build/ARM-$DATE.tar
+
+      - name: 编译并保存 AMD 镜像
+        run: |
+          # 获取当前日期
+          DATE=$(date +'%Y-%m-%d')
+
+          # 使用 Docker BuildX 编译 AMD 镜像并加载到 Docker
+          docker buildx build --platform linux/amd64 -t ssh-alert-server-amd:$DATE -f src/docker/Dockerfile --load .
+
+          # 将 AMD 镜像保存为 tar 文件
+          mkdir -p build
+          docker save ssh-alert-server-amd:$DATE -o build/AMD-$DATE.tar
 
       - name: 提交 Commit，推送文件
         run: |
@@ -36,7 +48,8 @@ jobs:
           git config --global user.email "github-actions@github.com"
 
           # 提交 tar 文件
-          git add build/$DATE.tar
+          git add build/ARM-$DATE.tar
+          git add build/AMD-$DATE.tar
           git commit -m "<BUILD> 日期:$DATE 自动化构建 Docker 镜像"
 
           # 推送到远程仓库

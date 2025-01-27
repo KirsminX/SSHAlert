@@ -23,7 +23,7 @@ jobs:
           DATE=$(date +'%Y-%m-%d')
 
           # 使用 Docker BuildX 编译镜像
-          docker buildx build --platform linux/amd64,linux/arm64 -t ssh-alert-server:$DATE -f src/docker/Dockerfile --output type=tar,dest=ssh-alert-server.tar .
+          docker buildx build --platform linux/amd64,linux/arm64 -t ssh-alert-server:$DATE -f src/docker/Dockerfile .
 
           # 将镜像保存为 tar 文件
           mkdir -p build

@@ -61,32 +61,51 @@ class Config:
             return {}
 
     def validate(self):
-        try:
-            # SSHServer 验证
-            assert isinstance(self.config['SSHServer']['ServerName'], str), "`ServerName` 的值必须为字符串！"
-            assert 1 <= self.config['SSHServer']['Port'] <= 65535, "`Port` 的值必须为整数，1-65535！"
+        errors = []
 
-            # Database 验证
-            assert os.path.isfile(self.config['Database']['Path']), "`[Database].Path` 此数据库文件不存在！ "
+        # SSHServer 验证
+        if not isinstance(self.config.get('SSHServer', {}).get('ServerName'), str):
+            errors.append("`ServerName` 的值必须为字符串！")
+        if 'Port' in self.config.get('SSHServer', {}):
+            port = self.config['SSHServer']['Port']
+            if not (isinstance(port, int) and 1 <= port <= 65535):
+                errors.append("`Port` 的值必须为整数，1-65535！")
 
-            # Time 验证
-            assert self.config['Time']['TimeZone'] in pytz.all_timezones, "`[Time].TimeZone` 必须为 bool 值！"
+        # Database 验证
+        db_path = self.config.get('Database', {}).get('Path')
+        if db_path and not os.path.isfile(db_path):
+            errors.append("`[Database].Path` 此数据库文件不存在！ ")
 
-            # Setting 验证
-            assert isinstance(self.config['Setting']['AutoUpdate'], bool), "`[Setting].AutoUpdate` 必须 bool 值！"
-            assert isinstance(self.config['Setting']['UpdateAddress'], list) and len(
-                self.config['Setting']['UpdateAddress']) > 0, "`[Setting].UpdateAddress` 必须为字符串列表，不能为空！"
-            url_pattern = re.compile(r'https?://\S+\.txt$')
-            for url in self.config['Setting']['UpdateAddress']:
-                assert url_pattern.match(url), f"`[Setting].UpdateAddress` 无效的更新地址: {url}！"
-            assert isinstance(self.config['Setting']['Interval'], int) and self.config['Setting'][
-                'Interval'] > 2, "`[Setting].Interval` 必须为整数，且大于 2！"
+        # Time 验证
+        time_zone = self.config.get('Time', {}).get('TimeZone')
+        if time_zone and time_zone not in pytz.all_timezones:
+            errors.append("`[Time].TimeZone` 必须为有效的时区字符串！")
 
-        except AssertionError as e:
-            log.error(f"配置文件验证失败: {str(e)}")
-            sys.exit(1)
-        except KeyError as e:
-            log.error(f"配置文件缺少必要的键: {str(e)}")
+        # Setting 验证
+        setting = self.config.get('Setting', {})
+        auto_update = setting.get('AutoUpdate')
+        if auto_update is not None and not isinstance(auto_update, bool):
+            errors.append("`[Setting].AutoUpdate` 必须为布尔值！")
+
+        update_address = setting.get('UpdateAddress')
+        if update_address is not None:
+            if not (isinstance(update_address, list) and len(update_address) > 0):
+                errors.append("`[Setting].UpdateAddress` 必须为非空字符串列表！")
+            else:
+                url_pattern = re.compile(r'https?://\S+\.txt$')
+                for url in update_address:
+                    if not url_pattern.match(url):
+                        errors.append(f"`[Setting].UpdateAddress` 无效的更新地址: {url}！")
+
+        interval = setting.get('Interval')
+        if interval is not None:
+            if not (isinstance(interval, int) and interval > 2):
+                errors.append("`[Setting].Interval` 必须为大于 2 的整数！")
+
+        if errors:
+            log.error("配置文件验证失败！以下是错误信息:")
+            for error in errors:
+                log.error(f"- {error}")
             sys.exit(1)
 
 

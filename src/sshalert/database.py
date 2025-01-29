@@ -1,4 +1,5 @@
 import os
+import sys
 from contextlib import asynccontextmanager
 from enum import Enum
 from typing import Union
@@ -6,6 +7,8 @@ from typing import Union
 import aiosqlite
 
 from validator import DataValidator
+from log import Log
+log = Log()
 
 
 class TableNotMatch(Exception):
@@ -220,3 +223,17 @@ class Database:
             await cursor.execute(query, values)
             return await cursor.fetchall()
 
+
+async def fixer(database_path):
+    log.info("是否**重置数据库**？")
+    log.info("输入 Y 以 **重置数据库**，输入 N 、[Space] 或者其他值退出")
+    user_input = input("[Y/N/Others]>")
+    if user_input.upper() == "Y":
+        log.info("正在重置数据库...")
+        # noinspection PyUnusedLocal
+        temp = Database(path=database_path, fix_by_force=True)
+        log.info("重置数据库完成！")
+        del temp
+    else:
+        log.error("退出 SSH Alert！")
+        sys.exit(1)

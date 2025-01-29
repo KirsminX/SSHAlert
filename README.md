@@ -1,20 +1,12 @@
-<style>
-.right-aligned {
-    text-align: right;
-}
-.center-aligned {
-    text-align: center;
-}
-</style>
-
-<p class="right-aligned">
+<p align="right">
    <strong>简体中文</strong>
 <!-- Tips: When English document is ready, replace Line 2 with the following line:
     <strong>简体中文</strong> | <a href="./README.en.md">English</a>
 -->
 </p>
 
-<div class="center-aligned">
+<div align="center">
+
 # SSH Alert
 _✨ 基于 Docker 实现的 SSH 蜜罐 ✨_
 [![LICENSE](https://img.shields.io/badge/LICENSE-MIT-blue)](https://opensource.org/licenses/MIT)
@@ -51,15 +43,24 @@ _✨ 基于 Docker 实现的 SSH 蜜罐 ✨_
 ## 命令参数
 
 **Linux**
+
 `./ssh-alert [参数]`
 **Windows**
+
 `.\ssh-alert.exe [参数]`
 
 **参数**
+
 `（无参数）` 启动 SSH Alert
+
 `start` 启动 SSH Alert 驻守进程
+
 `stop` 停止 SSH Alert 驻守进程
+
 `log` 查看 SSH Alert 日志（最新 25 条 + 概况）
+
 `status` 查看 SSH Alert 状态（概况）
+
 `update` 更新 SSH Alert
+
 `docs` 打印命令列表

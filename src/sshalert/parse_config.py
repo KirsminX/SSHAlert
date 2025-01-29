@@ -71,6 +71,26 @@ class Config:
             if not (isinstance(port, int) and 1 <= port <= 65535):
                 errors.append("`Port` 的值必须为整数，1-65535！")
 
+        # Log 验证
+        log_config = self.config.get('Log', {})
+        if 'debug' in log_config and not isinstance(log_config['debug'], bool):
+            errors.append("`[Log].debug` 必须为 bool 值！")
+        if 'memorize' in log_config and not isinstance(log_config['memorize'], bool):
+            errors.append("`[Log].memorize` 必须为 bool 值！")
+        else:
+            if log_config.get('memorize') is False:
+                log.warning("日志内存记忆功能已禁用！可能导致功能异常")
+        if 'max_memorized' in log_config:
+            max_memorized = log_config['max_memorized']
+            if not (isinstance(max_memorized, int) and max_memorized > 0):
+                errors.append("`[Log].max_memorized` 必须为大于 0 的整数！")
+        if 'written' in log_config and not isinstance(log_config['written'], bool):
+            errors.append("`[Log].written` 必须为布尔值！")
+        if 'max_written' in log_config:
+            max_written = log_config['max_written']
+            if not (isinstance(max_written, int) and max_written > 0):
+                errors.append("`[Log].max_written` 必须为大于 0 的整数！")
+
         # Database 验证
         db_path = self.config.get('Database', {}).get('Path')
         if db_path and not os.path.isfile(db_path):
@@ -117,6 +137,18 @@ DEFAULT_CONFIG = """# SSH Alert 配置文件
 ServerName = "Debian Server"
 # 端口（默认「22」，不建议修改）
 Port = 22
+
+[Log]
+# 调试模式（默认「false」），提交错误日志前请设置为「true」，删除日志文件重新复现 bug
+debug = false
+# 内存记忆功能（默认「true」），**请勿关闭此功能**
+memorize = true
+# 内存存储日志行数最大值（默认「100」），视内存大小而行
+max_memorized = 100
+# 写入文件功能（默认「true」），提交错误日志前请设置为「true」
+written = true
+# 写入日志行数最大值（默认「1000」），视存储容量大小而行
+max_written = 1000
 
 [Database]
 # SQLite3 数据库路径（默认「Database.db」）
